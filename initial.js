@@ -16,7 +16,10 @@ app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
 const PORT = dotenv.parsed.PORT || 3000;
 
 // สร้าง HTTP Server
-// const httpServer = http.createServer(app);
+const httpServer = http.createServer(app);
+httpServer.listen(PORT, () => {
+  console.log(`HTTP Server running on port ${PORT}`);
+});
 // httpServer.listen(PORT, "0.0.0.0", () => {
 //   console.log(`🚀 HTTP Server running on:`);
 //   console.log(`   Local:   http://localhost:${PORT}`);
