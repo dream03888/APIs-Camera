@@ -25,7 +25,7 @@ const getZones = async () => {
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function getZones: " + error);
     return { status: 201, msg: error };
   }
 };
@@ -78,7 +78,7 @@ WHERE camera_id = ?`;
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function getCameraByZoneByCamera(): " + error);
     return { status: 201, msg: error };
   }
 };
@@ -96,7 +96,7 @@ WHERE camera_zone = ?`;
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function getAndInsertData(): " + error);
     return { status: 201, msg: error };
   }
 };
@@ -366,7 +366,7 @@ GROUP BY transaction_checklist.transaction_id;;
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function Myrequest_transaction(): " + error);
     return { status: 201, msg: error };
   }
 };
@@ -390,7 +390,7 @@ GROUP BY transaction_items.camera_id;  -- ✅ ย้าย WHERE มาที่
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function Myrequest_Bytransaction(): " + error);
     return { status: 201, msg: error };
   }
 };
@@ -423,7 +423,7 @@ WHERE camera_zone.camera_id = ? AND transaction_id = ?;  -- ✅ ย้าย WHE
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function CheckList_camera(): " + error);
     return { status: 201, msg: error };
   }
 };
@@ -525,7 +525,7 @@ INNER JOIN transaction_items ON transaction_checklist.transaction_id = transacti
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function HistoryByUSer(): " + error);
     return { status: 201, msg: error };
   }
 };
@@ -565,7 +565,7 @@ const History_data_user = async (camera_id, transaction_id) => {
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function History_data_user(): " + error);
     return { status: 201, msg: error };
   }
 };
@@ -651,7 +651,7 @@ WHERE status IN (2,3);`;
     }
     return { status: 200, msg: rows };
   } catch (error) {
-    console.log("Error Function getZone(): " + error);
+    console.log("Error Function ErrorCamera(): " + error);
     return { status: 201, msg: error };
   }
 };
