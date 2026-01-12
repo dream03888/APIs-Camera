@@ -313,51 +313,55 @@ const Register_user = async (users) => {
 
 const Myrequest_transaction = async () => {
   const queryStr = `
-      WITH camera_list AS (
+     WITH camera_list AS (
     SELECT
-        transaction_items.transaction_id,
+        t.transaction_id,
         JSON_ARRAYAGG(
             JSON_OBJECT(
-                'id', transaction_items.id,
-                'transaction_id', transaction_items.transaction_id,
-                'status', transaction_items.status,
-                'qty', transaction_items.qty,
-                'remark', transaction_items.remark,
-                'camera_id', transaction_items.camera_id,
-                'camera_point', camera_zone.camera_point,
-                'camera_zone', camera_zone.camera_zone,
-                'camera_qty', camera_zone.camera_qty,
-                'camera_brand', camera_zone.camera_brand,
-                'status' , transaction_items.status
+                'id', t.id,
+                'transaction_id', t.transaction_id,
+                'status', t.status,
+                'qty', t.qty,
+                'remark', t.remark,
+                'camera_id', t.camera_id,
+                'camera_point', cz.camera_point,
+                'camera_zone', cz.camera_zone,
+                'camera_qty', cz.camera_qty,
+                'camera_brand', cz.camera_brand
             )
-            ORDER BY transaction_items.camera_id ASC   
-        ) as lists
-    FROM transaction_items
-    INNER JOIN camera_zone 
-        ON transaction_items.camera_id = camera_zone.camera_id
-    GROUP BY transaction_items.transaction_id
-        ORDER BY transaction_items.camera_id ASC
-
+        ) AS lists
+    FROM (
+        SELECT *
+        FROM transaction_items
+        ORDER BY camera_id ASC   -- เรียงตรงนี้แทน
+    ) t
+    INNER JOIN camera_zone cz
+        ON t.camera_id = cz.camera_id
+    GROUP BY t.transaction_id
 )
+
 SELECT 
-    transaction_checklist.transaction_id,
-    transaction_checklist.ticket_name,
-    transaction_checklist.start_date,
-    transaction_checklist.end_date,
-    transaction_checklist.complete_date,
-    transaction_checklist.emp_code,
-    transaction_checklist.completed,
-    camera_list.lists,
-    zone.zone_name,
-    zone.zone_id
-FROM transaction_checklist
-INNER JOIN camera_list 
-    ON transaction_checklist.transaction_id = camera_list.transaction_id
-    INNER JOIN transaction_items ON transaction_checklist.transaction_id = transaction_items.transaction_id
-    left JOIN camera_zone ON transaction_items.camera_id = camera_zone.camera_zone
-    left JOIN zone ON camera_zone.camera_zone = zone.zone_id 
--- WHERE transaction_checklist.emp_code = ?
-GROUP BY transaction_checklist.transaction_id;;
+    tc.transaction_id,
+    tc.ticket_name,
+    tc.start_date,
+    tc.end_date,
+    tc.complete_date,
+    tc.emp_code,
+    tc.completed,
+    cl.lists,
+    z.zone_name,
+    z.zone_id
+FROM transaction_checklist tc
+INNER JOIN camera_list cl 
+    ON tc.transaction_id = cl.transaction_id
+LEFT JOIN transaction_items ti 
+    ON tc.transaction_id = ti.transaction_id
+LEFT JOIN camera_zone cz 
+    ON ti.camera_id = cz.camera_id
+LEFT JOIN zone z 
+    ON cz.camera_zone = z.zone_id
+GROUP BY tc.transaction_id;
+;
   `;
   try {
     const [rows, fields] = await pool.query(queryStr);
