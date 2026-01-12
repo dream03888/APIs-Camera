@@ -328,9 +328,9 @@ const Myrequest_transaction = async () => {
                 'camera_zone', camera_zone.camera_zone,
                 'camera_qty', camera_zone.camera_qty,
                 'camera_brand', camera_zone.camera_brand,
-                  'status' , transaction_items.status
+                'status' , transaction_items.status
             )
-            ORDER BY transaction_items.camera_id ASC   -- ✅ MariaDB รองรับ ORDER BY ใน JSON_ARRAYAGG
+            ORDER BY transaction_items.camera_id ASC   
         ) as lists
     FROM transaction_items
     INNER JOIN camera_zone 
