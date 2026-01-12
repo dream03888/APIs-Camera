@@ -16,12 +16,12 @@ app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
 const PORT = dotenv.parsed.PORT || 3000;
 
 // สร้าง HTTP Server
-const httpServer = http.createServer(app);
-httpServer.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 HTTP Server running on:`);
-  console.log(`   Local:   http://localhost:${PORT}`);
-  console.log(`   Network: http://swapp.dyndns.org:${PORT}`);
-});
+// const httpServer = http.createServer(app);
+// httpServer.listen(PORT, "0.0.0.0", () => {
+//   console.log(`🚀 HTTP Server running on:`);
+//   console.log(`   Local:   http://localhost:${PORT}`);
+//   console.log(`   Network: http://swapp.dyndns.org:${PORT}`);
+// });
 
 // สร้าง MySQL Pool
 const pool = mysql.createPool({
