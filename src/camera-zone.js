@@ -665,6 +665,61 @@ WHERE status IN (2,3);`;
   }
 };
 
+
+async function insert_issues(data) {
+
+  console.log("Datasss", data);
+
+  const conn = await pool.getConnection();
+
+  try {
+
+    let filename = null;
+
+    // ถ้ามีรูป
+    if (data.photo_base64) {
+
+      const base64Data = data.photo_base64.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+
+      filename = `issue_${Date.now()}.png`;
+      const filePath = path.join(__dirname, "../uploads/issues", filename);
+
+      fs.writeFileSync(filePath, buffer);
+    }
+
+    const queryStr = `
+      INSERT INTO tbl_issues (id, status, detail, picture)
+      VALUES (?, ?, ?, ?)
+    `;
+
+    const values = [
+      data.id,
+      data.status,
+      data.fix_remark,
+      filename
+    ];
+
+    await conn.query(queryStr, values);
+
+    return { status: 200, msg: "Update success" };
+
+  } catch (error) {
+
+    console.error("Mysql error", error);
+    return { status: 400, msg: error };
+
+  } finally {
+    conn.release();
+  }
+}
+
+
+
+
+
+
+
 module.exports = {
   getZone,
   getCameraByZone,
@@ -684,5 +739,6 @@ module.exports = {
   insert_zone,
   getZones,
   Update_transaction,
-  ErrorCamera
+  ErrorCamera,
+  insert_issues
 };
