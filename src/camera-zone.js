@@ -2,6 +2,8 @@ const nodemon = require("nodemon");
 const { pool } = require("../initial");
 const mysql = require("mysql2/promise"); // ✅
 const bcrypt = require("bcryptjs");
+const path = require("path");
+const fs = require("fs");
 
 const getZone = async () => {
   const queryStr = `SELECT  COUNT(*) as count FROM zone `;
@@ -665,60 +667,42 @@ WHERE status IN (2,3);`;
   }
 };
 
-
 async function insert_issues(data) {
-
-  console.log("Datasss", data);
-
   const conn = await pool.getConnection();
 
   try {
-
-    let filename = null;
-
-    // ถ้ามีรูป
-    if (data.photo_base64) {
-
-      const base64Data = data.photo_base64.replace(/^data:image\/\w+;base64,/, "");
-      const buffer = Buffer.from(base64Data, "base64");
-
-      filename = `issue_${Date.now()}.png`;
-      const filePath = path.join(__dirname, "../uploads/issues", filename);
-
-      fs.writeFileSync(filePath, buffer);
-    }
-
     const queryStr = `
-      INSERT INTO tbl_issues (id, status, detail, picture)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO tbl_issues (id, detail, picture)
+      VALUES (?, ?, ?)
     `;
 
     const values = [
       data.id,
-      data.status,
       data.fix_remark,
-      filename
+      data.photo_base64, // 👈 เก็บ base64 ลง DB
     ];
 
     await conn.query(queryStr, values);
 
+    const queryStr$ = `
+                    UPDATE transaction_items SET status = ? WHERE id = ?
+                  `;
+
+    const queryValues$ = [
+      data.status,
+      data.id
+    ];
+
+    await conn.query(queryStr$, queryValues$);
+
     return { status: 200, msg: "Update success" };
-
   } catch (error) {
-
     console.error("Mysql error", error);
     return { status: 400, msg: error };
-
   } finally {
     conn.release();
   }
 }
-
-
-
-
-
-
 
 module.exports = {
   getZone,
@@ -740,5 +724,5 @@ module.exports = {
   getZones,
   Update_transaction,
   ErrorCamera,
-  insert_issues
+  insert_issues,
 };
