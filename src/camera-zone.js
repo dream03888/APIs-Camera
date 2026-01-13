@@ -313,7 +313,7 @@ const Register_user = async (users) => {
 
 const Myrequest_transaction = async () => {
   const queryStr = `
-     WITH camera_list AS (
+  WITH camera_list AS (
     SELECT
         t.transaction_id,
         JSON_ARRAYAGG(
@@ -333,7 +333,7 @@ const Myrequest_transaction = async () => {
     FROM (
         SELECT *
         FROM transaction_items
-        ORDER BY camera_id ASC   -- เรียงตรงนี้แทน
+        ORDER BY camera_id ASC
     ) t
     INNER JOIN camera_zone cz
         ON t.camera_id = cz.camera_id
@@ -342,15 +342,19 @@ const Myrequest_transaction = async () => {
 
 SELECT 
     tc.transaction_id,
-    tc.ticket_name,
-    tc.start_date,
-    tc.end_date,
-    tc.complete_date,
-    tc.emp_code,
-    tc.completed,
+
+    MAX(tc.ticket_name)     AS ticket_name,
+    MAX(tc.start_date)      AS start_date,
+    MAX(tc.end_date)        AS end_date,
+    MAX(tc.complete_date)   AS complete_date,
+    MAX(tc.emp_code)        AS emp_code,
+    MAX(tc.completed)       AS completed,
+
     cl.lists,
-    z.zone_name,
-    z.zone_id
+
+    MAX(z.zone_name)        AS zone_name,
+    MAX(z.zone_id)          AS zone_id
+
 FROM transaction_checklist tc
 INNER JOIN camera_list cl 
     ON tc.transaction_id = cl.transaction_id
@@ -360,8 +364,9 @@ LEFT JOIN camera_zone cz
     ON ti.camera_id = cz.camera_id
 LEFT JOIN zone z 
     ON cz.camera_zone = z.zone_id
-GROUP BY tc.transaction_id;
-;
+
+GROUP BY tc.transaction_id, cl.lists;
+
   `;
   try {
     const [rows, fields] = await pool.query(queryStr);
